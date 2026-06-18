@@ -1,0 +1,6 @@
+# requirements.yml
+# Ansible collection needed for the AWS EC2 dynamic inventory plugin
+
+collections:
+  - name: amazon.aws
+    version: ">=5.0.0"

@@ -1,0 +1,131 @@
+# =============================================================================
+# inventory/aws_ec2.yml — AWS EC2 DYNAMIC INVENTORY CONFIGURATION
+# -----------------------------------------------------------------------------
+# This file tells Ansible: "Don't use a static list of servers — instead,
+# go ASK AWS for a live, up-to-date list of EC2 instances every time you run."
+#
+# BENEFITS:
+#   - You NEVER manually update an inventory file when servers are created,
+#     stopped, or terminated.
+#   - Ansible ALWAYS targets whatever EC2 instances currently exist.
+#   - Servers are automatically organized into GROUPS based on their tags,
+#     instance type, region, etc.
+#
+# This file uses the OFFICIAL "amazon.aws.aws_ec2" inventory PLUGIN, which
+# comes from the "amazon.aws" Ansible Collection (see requirements.yml).
+# =============================================================================
+
+
+# -----------------------------------------------------------------------------
+# PLUGIN
+# -----------------------------------------------------------------------------
+# This line tells Ansible WHICH plugin to use to fetch the inventory data.
+# "amazon.aws.aws_ec2" is the official AWS EC2 dynamic inventory plugin.
+# -----------------------------------------------------------------------------
+plugin: amazon.aws.aws_ec2
+
+
+# -----------------------------------------------------------------------------
+# REGIONS
+# -----------------------------------------------------------------------------
+# List every AWS region you want Ansible to search for EC2 instances.
+# If your servers are spread across multiple regions, list them all here.
+# -----------------------------------------------------------------------------
+regions:
+  - us-east-1
+  # - us-west-2     # Uncomment this line to also search the Oregon region
+
+
+# -----------------------------------------------------------------------------
+# FILTERS
+# -----------------------------------------------------------------------------
+# Filters work exactly like the filters you'd use in the AWS CLI or the
+# EC2 console. Here we ONLY want instances that are currently RUNNING —
+# we don't want Ansible trying to SSH into stopped or terminated servers.
+# -----------------------------------------------------------------------------
+filters:
+  instance-state-name: running
+
+  # EXAMPLE: Only include instances with a specific tag.
+  # Uncomment and edit this to filter by your own tags:
+  # tag:Environment: production
+
+
+# -----------------------------------------------------------------------------
+# KEYED GROUPS
+# -----------------------------------------------------------------------------
+# This section AUTOMATICALLY creates GROUPS of hosts based on information
+# AWS already knows about each instance (tags, instance type, region, etc.)
+#
+# These groups let you target specific sets of servers in your playbooks.
+# Example: "hosts: tag_Environment_production" or "hosts: type_t2_micro"
+# -----------------------------------------------------------------------------
+keyed_groups:
+
+  # Create a group for EVERY TAG on every instance.
+  # Example: an instance tagged "Environment: production" automatically
+  # becomes a member of the group "tag_Environment_production"
+  - key: tags
+    prefix: tag
+    separator: "_"
+
+  # Create a group based on the INSTANCE TYPE.
+  # Example: a "t2.micro" instance becomes part of group "type_t2_micro"
+  - key: instance_type
+    prefix: type
+    separator: "_"
+
+  # Create a group based on the AWS REGION the instance is running in.
+  # Example: an instance in "us-east-1" becomes part of "aws_region_us_east_1"
+  - key: placement.region
+    prefix: aws_region
+    separator: "_"
+
+
+# -----------------------------------------------------------------------------
+# HOSTNAMES
+# -----------------------------------------------------------------------------
+# By default, Ansible would use the AWS instance ID (e.g. "i-0abc123def456")
+# as the "hostname" for each server. That's not very useful for connecting.
+#
+# Here we tell Ansible: "Try to use the PUBLIC IP address as the hostname.
+# If the instance doesn't have one, fall back to the PRIVATE IP address."
+# -----------------------------------------------------------------------------
+hostnames:
+  - public-ip-address    # Preferred — use this if the instance has a public IP
+  - private-ip-address   # Fallback — use this if there is no public IP
+
+
+# -----------------------------------------------------------------------------
+# COMPOSE
+# -----------------------------------------------------------------------------
+# "compose" lets us CREATE OR OVERRIDE variables for each host using data
+# AWS gives us about that instance.
+#
+# Here we explicitly set "ansible_host" — the address Ansible will actually
+# connect to via SSH — to the instance's public IP. If no public IP exists,
+# it falls back to the private IP (useful when running Ansible from WITHIN
+# the same VPC, e.g. from a bastion host).
+# -----------------------------------------------------------------------------
+compose:
+  ansible_host: public_ip_address | default(private_ip_address)
+
+  # EXAMPLE: Automatically set the SSH username based on a custom tag.
+  # If you tag your instances with "SSHUser: ec2-user", this would set
+  # ansible_user to "ec2-user" automatically. Uncomment to use:
+  # ansible_user: tags['SSHUser'] | default('ubuntu')
+
+
+# -----------------------------------------------------------------------------
+# CACHING (Optional — recommended for large environments)
+# -----------------------------------------------------------------------------
+# Querying AWS every single time you run a command can be SLOW if you have
+# hundreds of instances. Caching saves the inventory results to disk for a
+# short time so repeated commands run instantly.
+#
+# Uncomment the lines below to enable caching:
+# -----------------------------------------------------------------------------
+# cache: True
+# cache_plugin: jsonfile
+# cache_connection: /tmp/ansible_inventory_cache
+# cache_timeout: 300   # Cache expires after 300 seconds (5 minutes)

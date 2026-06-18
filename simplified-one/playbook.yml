@@ -1,0 +1,17 @@
+# playbook.yml
+# A simple playbook used to test that dynamic inventory is working.
+
+---
+- name: Test dynamic inventory connection
+  hosts: all          # Run on every host the dynamic inventory finds
+  gather_facts: true  # Collect basic info about each server
+
+  tasks:
+    # Confirm Ansible can connect to each server over SSH
+    - name: Ping the server
+      ansible.builtin.ping:
+
+    # Print the IP address Ansible used to connect
+    - name: Show the connected IP
+      ansible.builtin.debug:
+        msg: "Connected to {{ ansible_host }}"

@@ -1,0 +1,5 @@
+# requirements.txt
+# Python packages needed by the AWS EC2 inventory plugin to talk to AWS
+
+boto3>=1.26.0
+botocore>=1.29.0

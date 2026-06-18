@@ -1,0 +1,23 @@
+# =============================================================================
+# requirements.txt
+# -----------------------------------------------------------------------------
+# Python packages required for:
+#   1. The "amazon.aws.aws_ec2" dynamic inventory PLUGIN (inventory/aws_ec2.yml)
+#   2. The custom Python inventory SCRIPT (inventory/custom_dynamic_inventory.py)
+#
+# Both rely on "boto3" — the official AWS SDK for Python — to talk to AWS.
+#
+# HOW TO INSTALL:
+#   pip install -r requirements.txt --break-system-packages
+#
+# NOTE: "--break-system-packages" is required on Ubuntu 22.04+ to allow
+# installing Python packages globally with pip.
+# =============================================================================
+
+# AWS SDK for Python — used to authenticate and make API calls to AWS
+# (describe_instances, etc.)
+boto3>=1.26.0
+
+# Low-level library that boto3 is built on top of — required for handling
+# AWS API responses and exceptions correctly
+botocore>=1.29.0
