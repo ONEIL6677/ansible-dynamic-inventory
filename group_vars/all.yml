@@ -1,27 +1,11 @@
-# =============================================================================
 # group_vars/all.yml
-# -----------------------------------------------------------------------------
-# Variables in this file apply to EVERY host in the inventory, no matter
-# which group they belong to. Ansible automatically loads this file for
-# every playbook run — you don't need to reference it manually.
-# =============================================================================
+# Variables applied to every host found by the dynamic inventory.
 
-# The username Ansible will use to log in (SSH) to each EC2 instance.
-# "ubuntu" is the default user for Ubuntu AMIs.
-# Use "ec2-user" instead if you are using Amazon Linux AMIs.
+# Username used to SSH into the EC2 instances (default for Ubuntu AMIs)
 ansible_user: ubuntu
 
-# Path to the PRIVATE KEY file Ansible will use to authenticate via SSH.
-# This must match the PUBLIC KEY that was uploaded to AWS when the
-# instances were created (e.g. via Terraform's aws_key_pair resource).
+# Path to the private key matching the key pair used to launch the instances
 ansible_ssh_private_key_file: ~/.ssh/id_rsa
 
-# Skip strict SSH host key checking.
-# Useful in labs where EC2 instances are frequently created and destroyed —
-# each new instance would otherwise trigger a host key warning.
+# Skip strict host key checking (useful since EC2 IPs change often)
 ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
-
-# Tell Ansible to use Python 3 when running tasks on the remote server.
-# Most modern Ubuntu and Amazon Linux AMIs have Python 3 pre-installed
-# at this location.
-ansible_python_interpreter: /usr/bin/python3

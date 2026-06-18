@@ -1,77 +1,17 @@
-# =============================================================================
 # playbook.yml
-# -----------------------------------------------------------------------------
-# A simple TEST playbook used to verify that DYNAMIC INVENTORY is working
-# correctly.
-#
-# When you run this playbook, Ansible will:
-#   1. Ask AWS for a live list of running EC2 instances
-#      (using inventory/aws_ec2.yml)
-#   2. Connect to EVERY instance it finds via SSH
-#   3. Ping each host to confirm the connection works
-#   4. Print useful facts about each server
-#   5. Show which automatically-generated GROUPS each host belongs to
-# =============================================================================
+# A simple playbook used to test that dynamic inventory is working.
 
 ---
-# "hosts: all" means: run this playbook on EVERY host returned by the
-# dynamic inventory — we don't need to list IPs manually anywhere.
-- name: Verify dynamic inventory connectivity
-  hosts: all
-
-  # "gather_facts: true" tells Ansible to collect information about each
-  # server (operating system, IP addresses, memory, CPU, etc.) before
-  # running any tasks. These facts become variables we can use below
-  # (e.g. ansible_hostname, ansible_distribution).
-  gather_facts: true
+- name: Test dynamic inventory connection
+  hosts: all          # Run on every host the dynamic inventory finds
+  gather_facts: true  # Collect basic info about each server
 
   tasks:
-
-    # -------------------------------------------------------------------
-    # TASK 1: Ping the host
-    # -------------------------------------------------------------------
-    # The built-in "ping" module checks that Ansible can:
-    #   - Connect to the host via SSH
-    #   - Run a small Python script on it
-    # If successful, you will see "pong" in the output for each host.
-    # -------------------------------------------------------------------
-    - name: Ping the EC2 instance
+    # Confirm Ansible can connect to each server over SSH
+    - name: Ping the server
       ansible.builtin.ping:
 
-    # -------------------------------------------------------------------
-    # TASK 2: Print the hostname AWS/the OS assigned to this server
-    # -------------------------------------------------------------------
-    # "ansible_hostname" is a FACT automatically gathered in Task 0
-    # (the gather_facts step above) — we don't need to define it ourselves.
-    # -------------------------------------------------------------------
-    - name: Show the server's hostname
+    # Print the IP address Ansible used to connect
+    - name: Show the connected IP
       ansible.builtin.debug:
-        msg: "Connected to instance with hostname: {{ ansible_hostname }}"
-
-    # -------------------------------------------------------------------
-    # TASK 3: Print connection details for this host
-    # -------------------------------------------------------------------
-    # "ansible_host" comes from our dynamic inventory's "compose" section
-    # (the public or private IP we told Ansible to connect to).
-    #
-    # "private_ip" and "instance_type" come from the EC2 metadata that the
-    # aws_ec2 plugin automatically attaches to each host.
-    # -------------------------------------------------------------------
-    - name: Show connection details
-      ansible.builtin.debug:
-        msg: >
-          ansible_host = {{ ansible_host }},
-          private_ip = {{ private_ip_address | default('N/A') }},
-          instance_type = {{ instance_type | default('N/A') }}
-
-    # -------------------------------------------------------------------
-    # TASK 4: Show which dynamic groups this host belongs to
-    # -------------------------------------------------------------------
-    # "group_names" is a BUILT-IN Ansible variable that lists every group
-    # the CURRENT host is a member of. These groups were created
-    # AUTOMATICALLY by the "keyed_groups" section in inventory/aws_ec2.yml
-    # (e.g. tag_Environment_production, type_t2_micro, aws_region_us_east_1)
-    # -------------------------------------------------------------------
-    - name: Show dynamic inventory groups for this host
-      ansible.builtin.debug:
-        msg: "This host belongs to these groups: {{ group_names }}"
+        msg: "Connected to {{ ansible_host }}"

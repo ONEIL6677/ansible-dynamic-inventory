@@ -1,25 +1,6 @@
-# =============================================================================
 # requirements.yml
-# -----------------------------------------------------------------------------
-# This file lists the ANSIBLE COLLECTIONS required by this project.
-#
-# WHAT IS A "COLLECTION"?
-# A collection is a packaged bundle of modules, plugins, and roles.
-# The "amazon.aws" collection provides the "aws_ec2" inventory PLUGIN
-# that powers inventory/aws_ec2.yml in this project.
-#
-# HOW TO INSTALL THESE COLLECTIONS:
-#   ansible-galaxy collection install -r requirements.yml
-# =============================================================================
+# Ansible collection needed for the AWS EC2 dynamic inventory plugin
 
 collections:
-
-  # Provides the "amazon.aws.aws_ec2" dynamic inventory plugin, plus
-  # core EC2/VPC/IAM modules (ec2_instance, ec2_vpc_net, etc.)
   - name: amazon.aws
-    version: ">=5.0.0"
-
-  # Provides additional COMMUNITY-maintained AWS modules — not strictly
-  # required for dynamic inventory, but commonly used alongside amazon.aws
-  - name: community.aws
     version: ">=5.0.0"
