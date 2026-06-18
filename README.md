@@ -1,4 +1,4 @@
-# Ansible Dynamic Inventory — AWS EC2
+# Ansible Dynamic Inventory AWS EC2
 
 This project shows how to set up **dynamic inventory** in Ansible so it
 automatically discovers your running AWS EC2 instances — no manual list
@@ -28,13 +28,13 @@ ansible-dynamic-inventory-simple/
 
 ## Step-by-Step Setup
 
-### Step 1 — Install Ansible and Python dependencies
+### Step 1: Install Ansible and Python dependencies
 
 ```bash
 pip install ansible -r requirements.txt --break-system-packages
 ```
 
-### Step 2 — Install the AWS collection
+### Step 2: Install the AWS collection
 
 This gives Ansible the `aws_ec2` plugin used in `inventory/aws_ec2.yml`.
 
@@ -42,7 +42,7 @@ This gives Ansible the `aws_ec2` plugin used in `inventory/aws_ec2.yml`.
 ansible-galaxy collection install -r requirements.yml
 ```
 
-### Step 3 — Configure your AWS credentials
+### Step 3: Configure your AWS credentials
 
 The inventory plugin uses the same credentials as the AWS CLI.
 
@@ -52,7 +52,7 @@ aws configure
 
 Enter your Access Key, Secret Key, and region (e.g. `us-east-1`) when prompted.
 
-### Step 4 — Set your SSH details
+### Step 4: Set your SSH details
 
 Open `group_vars/all.yml` and make sure the user and key path match your
 EC2 setup:
@@ -62,7 +62,7 @@ ansible_user: ubuntu
 ansible_ssh_private_key_file: ~/.ssh/id_rsa
 ```
 
-### Step 5 — Check the inventory works
+### Step 5: Check the inventory works
 
 Run this to see the live list of EC2 instances Ansible finds:
 
@@ -72,7 +72,7 @@ ansible-inventory -i inventory/aws_ec2.yml --graph
 
 You should see your running instances grouped by tag and instance type.
 
-### Step 6 — Test the connection
+### Step 6: Test the connection
 
 ```bash
 ansible all -i inventory/aws_ec2.yml -m ping
@@ -80,7 +80,7 @@ ansible all -i inventory/aws_ec2.yml -m ping
 
 Each running instance should reply with `"pong"`.
 
-### Step 7 — Run the test playbook
+### Step 7: Run the test playbook
 
 ```bash
 ansible-playbook playbook.yml
